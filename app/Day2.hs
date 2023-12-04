@@ -1,15 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
-
 module Day2 where
-
 import Data.String.Conversions (cs)
 import Data.Text (Text, splitOn, replace)
-import Data.Traversable (for)
-
-type Game = (Int, [(Int, Text)])
 
 -- Parses a game into an ID and a 2d list of rounds.
-parseGame :: Text -> Game
 parseGame text = (gameId, [y | x <- named, y <- x])
   where
     list2round :: [Text] -> (Int, Text)
@@ -29,7 +23,6 @@ biggest color = foldl max 0 . items . snd
         items = map fst . filter (\a -> color == snd a)
 
 -- Verifies a game (using magic numbers)
-verify :: Game -> Bool
 verify game =
   biggest "red" game <= 12
     && biggest "green" game <= 13
