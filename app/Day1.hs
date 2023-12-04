@@ -19,7 +19,7 @@ count = extract . map digitToInt . filter isDigit
     extract i = 10 * head i + last i
 
 -- Just sum and map by the count.
-day1 = sum . map count
+day1p1 = sum . map count
 
 -- Consecutively replace.
 day1p2 = sum . map (count . cs . replaceOrdered num2num)
