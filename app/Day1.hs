@@ -2,7 +2,6 @@
 
 module Day1 where
 
-import Control.Monad (foldM)
 import Data.Char (digitToInt, isDigit)
 import Data.Foldable (minimumBy)
 import Data.List.NonEmpty (fromList)
@@ -26,7 +25,8 @@ day1p2 = sum . map (count . cs . replaceOrdered num2num)
 
 -- Replace consecutively
 replaceOrdered mappings string = if replaced == string then string else replaceOrdered mappings replaced
-    where replaced = replaceFirst mappings string
+  where
+    replaced = replaceFirst mappings string
 
 -- Conducts the first possible replacement, given an array of placement mappings and a string.
 replaceFirst mappings string =

@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Day2 where
+
 import Data.String.Conversions (cs)
-import Data.Text (Text, splitOn, replace)
+import Data.Text (Text, replace, splitOn)
 
 -- Parses a game into an ID and a 2d list of rounds.
 parseGame text = (gameId, [y | x <- named, y <- x])
@@ -19,8 +21,8 @@ parseGame text = (gameId, [y | x <- named, y <- x])
 
 -- Gets the biggest color from the given game.
 biggest color = foldl max 0 . items . snd
-    where
-        items = map fst . filter (\a -> color == snd a)
+  where
+    items = map fst . filter (\a -> color == snd a)
 
 -- Verifies a game (using magic numbers)
 verify game =
