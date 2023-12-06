@@ -17,4 +17,4 @@ main = do
   let lines = splitOn "\n" handle
   let textLines = map cs lines
 
-  print $ day4p1 textLines
+  print $ day4p2 textLines
