@@ -15,8 +15,6 @@ main :: IO ()
 main = do
   handle <- readFile "./input/day5.txt"
 
-  let lines = splitOn "\n" handle
-  let textLines = map cs lines
+  let textLines = cs handle
 
   print $ day5p1 textLines
-  print $ day5p2 textLines

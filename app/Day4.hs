@@ -4,24 +4,21 @@ module Day4 where
 
 import Data.String.Conversions (cs)
 import Data.Text (Text, length, replace, splitOn)
+import Lib (sepBy, str, int, ws, Parser (run), notNull)
 
-parseCard text = (id, (winning, have))
+optParse = fmap snd . run parseCards
+
+parseCards = notNull $ sepBy (str "\n") parseCard
   where
-    (rawid:rawcards:_) = splitOn ": " text
-
-    id :: Int
-    id = read $ cs $ replace "Card " "" rawid
-
-    parse :: Text -> [Int]
-    parse line = map (read . cs) $ filter ((> 0) . Data.Text.length) (splitOn " " line)
-    
-    (winning:have:_) = map parse $ splitOn "|" rawcards
+    parseCard = str "Card" *> ws *> ((,) <$> int <* str ":" <* ws <*> parseSides)
+    parseSides = (,) <$> parseNums <* str "|" <*> parseNums
+    parseNums = sepBy ws int
 
 matches (winning, have) = Prelude.length $ filter (`elem` have) winning
 
 wins card = 2 ^ max 0 (matches card - 1)
 
-day4p1 = sum . map (wins . snd . parseCard)
+day4p1 = fmap (sum . map (wins . snd)) . optParse
 
 getNext cards (id, info) = filter (<= Prelude.length cards) $ map (+ id) [1 .. matches info]
 
@@ -34,4 +31,4 @@ calc cards = foldl fold ones cards
     ones = replicate (Prelude.length cards) 1
     fold values card = zipWith (+) values (map (* (values !! (fst card -1))) (allAdditions cards card))
 
-day4p2 = sum . calc . map parseCard
+day4p2 = fmap (sum . calc) . optParse
