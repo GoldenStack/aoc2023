@@ -18,3 +18,4 @@ main = do
   let textLines = cs handle
 
   print $ day5p1 textLines
+  print $ day5p2 textLines

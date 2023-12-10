@@ -18,14 +18,17 @@ data Range = Range
   }
   deriving (Show)
 
-parseAlmanac = (,) <$> parseSeeds <* ws <*> parseRangeGroups
+parseRangeGroups = many ((\_ x -> x) <$> mapName <* ws <*> parseRanges <* ws)
   where
-    parseSeeds = str "seeds:" *> ws *> many (int <* ws)
+    parseRanges = notNull $ sepBy ws parseRange
     parseRange = Range <$> int <* ws <*> int <* ws <*> int
-    parseRangeGroups = many ((\_ x -> x) <$> mapName <* ws <*> parseRanges <* ws)
-      where
-        parseRanges = notNull $ sepBy ws parseRange
-        mapName = (,) <$> word <* str "-to-" <*> word <* str " map:" <* ws
+    mapName = (,) <$> word <* str "-to-" <*> word <* str " map:" <* ws
+
+parseAlmanac seedParser = (,) <$> (str "seeds:" *> ws *> many (seedParser <* ws)) <* ws <*> parseRangeGroups
+
+parseAlmanac1 = parseAlmanac int
+
+parseAlmanac2 = parseAlmanac $ (,) <$> int <* ws <*> int
 
 mapRange value range
   | inrange = Left $ (value - source range) + dest range
@@ -38,11 +41,15 @@ passThrough = foldl (\val ranges -> either id id $ mapRanges val ranges)
     mapRanges = foldM mapRange
 
 day5p1 text = do
-  almanac <- fmap snd (run parseAlmanac text)
+  almanac <- snd <$> run parseAlmanac1 text
 
-  let seedAndLoc = \seed -> (seed, seed `passThrough` snd almanac)
-  let min = minimumBy (comparing snd) $ map seedAndLoc (fst almanac)
+  let seedAndLoc = \seed -> seed `passThrough` snd almanac
 
-  return min
+  return $ minimum $ map seedAndLoc (fst almanac)
 
-day5p2 = const ""
+day5p2 text = do
+  almanac <- snd <$> run parseAlmanac2 text
+
+
+
+  return $ fst almanac
