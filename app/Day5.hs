@@ -5,6 +5,7 @@ module Day5 where
 import Control.Applicative (Alternative (many))
 import Control.Monad (foldM)
 import Data.Foldable (minimumBy)
+import Data.Ord (comparing)
 import Data.String.Conversions (cs)
 import Data.Text (Text, intercalate, length, replace, splitOn)
 import Debug.Trace (trace)
@@ -32,23 +33,20 @@ parseAlmanac = Almanac <$> parseSeeds <* ws <*> parseRangeGroups
         parseRanges = notNull $ sepBy ws parseRange
         mapName = (,) <$> word <* str "-to-" <*> word <* str " map:" <* ws
 
-mapRange :: Int -> Range -> Either Int Int
 mapRange value range
   | inrange = Left $ (value - source range) + dest range
   | otherwise = Right value
   where
     inrange = value >= source range && value < (source range + size range)
 
-mapRanges :: Int -> [Range] -> Either Int Int
 mapRanges = foldM mapRange
 
-passThrough :: Int -> [[Range]] -> Int
 passThrough = foldl (\val ranges -> either id id $ mapRanges val ranges)
 
 day5p1 text = do
   almanac <- fmap snd (run parseAlmanac text)
 
-  let min = minimumBy (\a b -> compare (snd a) (snd b)) $ zip (seeds almanac) $ map (\a -> passThrough a (mappings almanac)) (seeds almanac)
+  let min = minimumBy (comparing snd) $ zip (seeds almanac) $ map (\a -> passThrough a (mappings almanac)) (seeds almanac)
 
   return min
 
