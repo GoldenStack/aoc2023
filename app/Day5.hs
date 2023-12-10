@@ -18,13 +18,7 @@ data Range = Range
   }
   deriving (Show)
 
-data Almanac = Almanac
-  { seeds :: [Int],
-    mappings :: [[Range]]
-  }
-  deriving (Show)
-
-parseAlmanac = Almanac <$> parseSeeds <* ws <*> parseRangeGroups
+parseAlmanac = (,) <$> parseSeeds <* ws <*> parseRangeGroups
   where
     parseSeeds = str "seeds:" *> ws *> many (int <* ws)
     parseRange = Range <$> int <* ws <*> int <* ws <*> int
@@ -39,14 +33,15 @@ mapRange value range
   where
     inrange = value >= source range && value < (source range + size range)
 
-mapRanges = foldM mapRange
-
 passThrough = foldl (\val ranges -> either id id $ mapRanges val ranges)
+  where
+    mapRanges = foldM mapRange
 
 day5p1 text = do
   almanac <- fmap snd (run parseAlmanac text)
 
-  let min = minimumBy (comparing snd) $ zip (seeds almanac) $ map (\a -> passThrough a (mappings almanac)) (seeds almanac)
+  let seedAndLoc = \seed -> (seed, seed `passThrough` snd almanac)
+  let min = minimumBy (comparing snd) $ map seedAndLoc (fst almanac)
 
   return min
 
