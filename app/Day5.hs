@@ -50,6 +50,8 @@ day5p1 text = do
 day5p2 text = do
   almanac <- snd <$> run parseAlmanac2 text
 
+  let totalSeeds = concatMap (\(a, b) -> [a..a+b]) (fst almanac)
 
+  let seedAndLoc = \seed -> seed `passThrough` snd almanac
 
-  return $ fst almanac
+  return $ minimum $ map seedAndLoc totalSeeds
